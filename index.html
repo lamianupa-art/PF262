@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Krankenhaushygiene & Infektionen · Quiz</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --midnight: #0B132B;
+            --space: #111C35;
+            --slate-navy: #1E2D4A;
+            --teal: #0D9488;
+            --teal-light: #14B8A6;
+            --teal-glow: #2DD4BF;
+            --teal-pale: #F0FDFA;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--midnight);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(20, 184, 166, .06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(20, 184, 166, .06) 1px, transparent 1px);
+            background-size: 28px 28px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .screen {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* FRONT / START SCREEN */
+        #startScreen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 410px;
+            width: 100%;
+        }
+
+        .start-card {
+            width: 100%;
+            background: var(--space);
+            border: 1px solid var(--slate-navy);
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, .5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Banner container with floating badges */
+        .banner-container {
+            position: relative;
+            width: 100%;
+            height: 180px;
+        }
+
+        .hospital-img-banner {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.85);
+        }
+
+        /* Floating Side Badges & Icons */
+        .banner-overlay-top {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .hospital-logo-badge {
+            background: rgba(11, 19, 43, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--teal-glow);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .hospital-logo-badge i {
+            color: var(--teal-glow);
+        }
+
+        /* 3-4 Hearts & Virus Signs Row */
+        .banner-icons-group {
+            display: flex;
+            gap: 6px;
+        }
+
+        .icon-chip {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(11, 19, 43, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .icon-chip.heart {
+            color: #f43f5e;
+            border-color: rgba(244, 63, 94, 0.4);
+        }
+
+        .icon-chip.virus {
+            color: var(--teal-glow);
+            border-color: rgba(45, 212, 191, 0.4);
+        }
+
+        .start-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            text-align: center;
+        }
+
+        .start-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.3;
+        }
+
+        .start-subtitle {
+            font-size: 11px;
+            color: var(--teal-glow);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .qr-box {
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(13, 148, 136, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--teal-light);
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .qr-box:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 14px 35px rgba(13, 148, 136, 0.4);
+        }
+
+        .qr-box img {
+            display: block;
+            width: 150px;
+            height: 150px;
+            border-radius: 8px;
+        }
+
+        .scan-hint {
+            font-size: 11px;
+            color: #94a3b8;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 10px 14px;
+            border-radius: 12px;
+            width: 100%;
+            line-height: 1.4;
+        }
+
+        .scan-hint i {
+            color: var(--teal-glow);
+            margin-right: 4px;
+        }
+
+        /* QUIZ SCREEN */
+        #quizScreen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            max-width: 440px;
+            width: 100%;
+        }
+
+        .app-bar {
+            width: 100%;
+            background: rgba(17, 28, 53, .9);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--slate-navy);
+            padding: 12px 16px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .ab-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .ab-sub {
+            font-size: 10px;
+            color: #64748b;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .ab-badge {
+            background: var(--slate-navy);
+            border: 1px solid rgba(255, 255, 255, .08);
+            color: #cbd5e1;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 12px;
+        }
+
+        .progress-wrap {
+            width: 100%;
+            background: var(--slate-navy);
+            border-radius: 99px;
+            height: 6px;
+            margin-bottom: 14px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--teal), var(--teal-glow));
+            border-radius: 99px;
+            transition: width .3s ease;
+        }
+
+        .quiz-card {
+            width: 100%;
+            background: #fff;
+            border-radius: 28px;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
+        }
+
+        .q-num-pill {
+            display: inline-block;
+            background: #0f172a;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .q-text {
+            font-size: 15px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .opt-card {
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .opt-card:active {
+            transform: scale(.98);
+        }
+
+        .opt-card.selected {
+            border-color: var(--teal) !important;
+            background: var(--teal-pale) !important;
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, .15);
+        }
+
+        .opt-card.selected .opt-letter {
+            background: var(--teal) !important;
+            color: #fff !important;
+        }
+
+        .opt-letter {
+            width: 28px;
+            height: 28px;
+            border-radius: 10px;
+            background: #e2e8f0;
+            color: #475569;
+            font-weight: 700;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .opt-text {
+            font-size: 13px;
+            font-weight: 500;
+            color: #334155;
+            flex: 1;
+            line-height: 1.4;
+        }
+
+        .quiz-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-nav {
+            flex: 1;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-nav:disabled {
+            opacity: .35;
+            cursor: not-allowed;
+        }
+
+        .btn-prev {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-next {
+            background: #0f172a;
+            color: #fff;
+        }
+
+        .btn-submit-all {
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--teal), var(--teal-glow));
+            color: #fff;
+            font-size: 14px;
+            font-weight: 800;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 6px 20px rgba(13, 148, 136, .45);
+        }
+
+        .unans-warn {
+            font-size: 11px;
+            color: #ef4444;
+            text-align: center;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        /* RESULTS SCREEN */
+        #resultsScreen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            max-width: 440px;
+            width: 100%;
+            gap: 16px;
+        }
+
+        .res-header {
+            width: 100%;
+            background: var(--space);
+            border: 1px solid var(--slate-navy);
+            border-radius: 28px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .score-pct {
+            font-size: 40px;
+            font-weight: 800;
+            color: var(--teal-glow);
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 4px;
+        }
+
+        .grade-label {
+            font-size: 16px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .result-msg {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .res-stats {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .res-stat {
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid rgba(255, 255, 255, .07);
+            border-radius: 14px;
+            padding: 10px 16px;
+            text-align: center;
+        }
+
+        .res-stat .v {
+            font-size: 20px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .res-stat .l {
+            font-size: 10px;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .review-wrap {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .review-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .review-item {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            padding: 14px;
+        }
+
+        .ri-header {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .ri-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 99px;
+            height: fit-content;
+            flex-shrink: 0;
+        }
+
+        .ri-badge.correct {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .ri-badge.wrong {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .ri-ans {
+            font-size: 11px;
+            color: #475569;
+            margin-top: 4px;
+        }
+
+        .res-buttons {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 15px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-home {
+            background: var(--space);
+            border: 1px solid var(--slate-navy);
+            color: #fff;
+        }
+
+        .btn-retry {
+            background: linear-gradient(135deg, var(--teal), var(--teal-glow));
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(13, 148, 136, .3);
+        }
+
+        .local-test-link {
+            font-size: 11px;
+            color: var(--teal-glow);
+            text-decoration: underline;
+            cursor: pointer;
+            margin-top: 4px;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- FRONT / START SCREEN -->
+    <section id="startScreen" class="screen">
+        <div class="start-card">
+
+            <!-- Banner with Hospital Logo & Floating Virus/Heart Badges -->
+            <div class="banner-container">
+                <img src="https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=600&q=80"
+                    alt="Krankenhaushygiene Desinfektion" class="hospital-img-banner">
+
+                <div class="banner-overlay-top">
+                    <!-- Hospital Logo / Medical Badge -->
+                    <div class="hospital-logo-badge">
+                        <i class="fa-solid fa-hospital"></i> Klinikum Hygiene
+                    </div>
+
+                    <!-- 3-4 Hearts & Virus Signs -->
+                    <div class="banner-icons-group">
+                        <div class="icon-chip virus" title="MRSA / Virus Schutz"><i
+                                class="fa-solid fa-shield-virus"></i></div>
+                        <div class="icon-chip heart" title="Gesundheit & Care"><i class="fa-solid fa-heart"></i></div>
+                        <div class="icon-chip heart" title="Patientenwohl"><i class="fa-solid fa-heart-pulse"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="start-content">
+                <div>
+                    <div class="start-title">Krankenhaushygiene & Infektionen</div>
+                    <div class="start-subtitle">
+                        <i class="fa-solid fa-hand-holding-medical"></i> MRSA & Handhygiene Quiz
+                    </div>
+                </div>
+
+                <!-- QR Code Center -->
+                <div class="qr-box" id="qrcode" onclick="startQuiz()"
+                    title="Klicken oder QR-Code scannen, um direkt ins Quiz zu starten!">
+                    <img id="qrImg" alt="QR-Code zum Quiz" />
+                </div>
+
+                <div class="scan-hint">
+                    <i class="fa-solid fa-qrcode"></i> <strong>QR-Code scannen:</strong> Mit der Smartphone-Kamera
+                    scannen, um direkt ins Quiz (Frage 1) zu gelangen!
+                    <div
+                        style="text-align: center; margin-top: 8px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                        <span class="local-test-link" onclick="startQuiz()"><i class="fa-solid fa-play"></i> Direkt Quiz
+                            starten</span>
+                        <span class="local-test-link" onclick="simulateQRScan()"><i class="fa-solid fa-camera"></i>
+                            QR-Scan simulieren</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUIZ SCREEN -->
+    <section id="quizScreen" class="screen" style="display:none;">
+        <div class="app-bar">
+            <div>
+                <div class="ab-title">Hygiene-Quiz</div>
+                <div class="ab-sub" id="appBarSub">Frage 1 von 10</div>
+            </div>
+            <div class="ab-badge" id="headerBadge">1 / 10</div>
+        </div>
+
+        <div class="progress-wrap">
+            <div class="progress-bar" id="progressBar" style="width:10%;"></div>
+        </div>
+
+        <div class="quiz-card">
+            <span class="q-num-pill" id="qNumPill">FRAGE 01 / 10</span>
+            <div class="q-text" id="qText">Lade...</div>
+
+            <div class="options-list" id="optionsList"></div>
+
+            <div class="quiz-nav" id="navButtons">
+                <button class="btn-nav btn-prev" id="btnPrev" onclick="goPrev()">
+                    <i class="fa-solid fa-arrow-left"></i> Zurück
+                </button>
+                <button class="btn-nav btn-next" id="btnNext" onclick="goNext()">
+                    Weiter <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <button class="btn-submit-all" id="btnSubmitAll" onclick="submitAll()" style="display:none;">
+                <i class="fa-solid fa-flag-checkered"></i> Auswertung anzeigen
+            </button>
+
+            <div id="unansWarn" class="unans-warn" style="display:none;"></div>
+        </div>
+    </section>
+
+    <!-- RESULTS SCREEN -->
+    <section id="resultsScreen" class="screen" style="display:none;">
+        <div class="res-header">
+            <div class="score-pct" id="pctDisplay">0%</div>
+            <div class="grade-label" id="gradeLabel">Auswertung</div>
+            <p class="result-msg" id="resultMsg"></p>
+
+            <div class="res-stats">
+                <div class="res-stat">
+                    <div class="v" id="statCorrect" style="color:#10b981;">0</div>
+                    <div class="lbl">Richtig</div>
+                </div>
+                <div class="res-stat">
+                    <div class="v" id="statWrong" style="color:#f43f5e;">0</div>
+                    <div class="lbl">Falsch</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="review-wrap">
+            <div class="review-title"><i class="fa-solid fa-clipboard-list" style="margin-right:5px;"></i> Detailansicht
+            </div>
+            <div id="reviewList"></div>
+        </div>
+
+        <div class="res-buttons">
+            <button class="btn-action btn-home" onclick="goToStart()">
+                <i class="fa-solid fa-house"></i> Zur Startseite (Front Page)
+            </button>
+            <button class="btn-action btn-retry" onclick="startQuiz()">
+                <i class="fa-solid fa-rotate-left"></i> Quiz wiederholen
+            </button>
+        </div>
+    </section>
+
+    <script>
+        const quizData = [
+            {
+                question: "Was ist eine nosokomiale Infektion?",
+                options: [
+                    { letter: "A", text: "Eine Infektion vor dem Krankenhausaufenthalt" },
+                    { letter: "B", text: "Eine Infektion, die während des Krankenhausaufenthalts erworben wird" },
+                    { letter: "C", text: "Eine vererbbare Hautkrankheit" }
+                ],
+                correctLetter: "B"
+            },
+            {
+                question: "Wofür steht die Abkürzung MRSA?",
+                options: [
+                    { letter: "A", text: "Multi-Resistenter Streptokokkus aureus" },
+                    { letter: "B", text: "Methicillin-resistenter Staphylococcus aureus" },
+                    { letter: "C", text: "Medizinisches Risiko-Screening A" }
+                ],
+                correctLetter: "B"
+            },
+            {
+                question: "Worin unterscheiden sich Kolonisation und Infektion?",
+                options: [
+                    { letter: "A", text: "Bei einer Kolonisation ist der Erreger nur vorhanden, ohne Symptome zu verursachen" },
+                    { letter: "B", text: "Eine Kolonisation ist immer lebensgefährlich" },
+                    { letter: "C", text: "Es gibt keinen Unterschied zwischen beiden Begriffen" }
+                ],
+                correctLetter: "A"
+            },
+            {
+                question: "Wie wird MRSA hauptsächlich im Krankenhaus übertragen?",
+                options: [
+                    { letter: "A", text: "Über die Raumluft und das Trinkwasser" },
+                    { letter: "B", text: "Über die Hände des medizinischen Personals" },
+                    { letter: "C", text: "Durch den Verzehr von Spezialkost" }
+                ],
+                correctLetter: "B"
+            },
+            {
+                question: "Was unterscheidet Basishygiene von erweiterten Hygienemaßnahmen?",
+                options: [
+                    { letter: "A", text: "Erweiterte Maßnahmen kommen bei speziellen Erregern wie MRSA zusätzlich hinzu" },
+                    { letter: "B", text: "Basishygiene ist nur für Ärzte gedacht, nicht für Pflegekräfte" },
+                    { letter: "C", text: "Es gibt keinen Unterschied im Klinikalltag" }
+                ],
+                correctLetter: "A"
+            },
+            {
+                question: "Was versteht man unter MRSA-Dekolonisation?",
+                options: [
+                    { letter: "A", text: "Die vollständige Schliessung des Krankenzimmers" },
+                    { letter: "B", text: "Die Reduktion oder Elimination der Erregerbesiedlung beim Patienten" },
+                    { letter: "C", text: "Das Desinfizieren von chirurgischen Instrumenten" }
+                ],
+                correctLetter: "B"
+            },
+            {
+                question: "Welche Patientengruppen sind besonders gefährdet?",
+                options: [
+                    { letter: "A", text: "Frisch Operierte und Patienten mit offenen Wunden" },
+                    { letter: "B", text: "Gesunde junge Menschen im Freizeitsport" },
+                    { letter: "C", text: "Patienten mit normalen Routine-Untersuchungen" }
+                ],
+                correctLetter: "A"
+            },
+            {
+                question: "Welche Maßnahme gehört zur alltäglichen Basishygiene?",
+                options: [
+                    { letter: "A", text: "Regelmäßige Händedesinfektion nach festgelegten Indikationen" },
+                    { letter: "B", text: "Das Tragen von Ganzkörper-Schutzanzügen im Flur" },
+                    { letter: "C", text: "Das Vermeiden jeglichen Kontakts zum Patienten" }
+                ],
+                correctLetter: "A"
+            },
+            {
+                question: "Wie kann sich eine Isolation auf das Wohlbefinden auswirken?",
+                options: [
+                    { letter: "A", text: "Sie hat absolut keine Auswirkungen auf den Patienten" },
+                    { letter: "B", text: "Sie führt automatisch zu einer schnellen Heilung" },
+                    { letter: "C", text: "Sie kann zu Gefühlen von Einschränkung oder sozialer Isolation führen" }
+                ],
+                correctLetter: "C"
+            },
+            {
+                question: "Was gilt bezüglich Besuchern von isolierten Patienten?",
+                options: [
+                    { letter: "A", text: "Besucher müssen sich an spezielle Hygienevorgaben und Schutzkleidung halten" },
+                    { letter: "B", text: "Besucher dürfen das Zimmer ohne Einschränkungen betreten" },
+                    { letter: "C", text: "Besucher sind grundsätzlich verboten" }
+                ],
+                correctLetter: "A"
+            }
+        ];
+
+        let currentIdx = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+
+        // Target URL for QR code (includes ?start=quiz so scanners bypass first page directly into startQuiz)
+        function getDirectQuizUrl() {
+            const isHttp = window.location.href.startsWith('http://') || window.location.href.startsWith('https://');
+            const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+            if (isHttp && !isLocalhost) {
+                try {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('start', 'quiz');
+                    return url.toString();
+                } catch (e) { }
+            }
+            return 'https://pflege-hygiene-quiz.netlify.app/?start=quiz';
+        }
+
+        // Simulate scanning the QR code on mobile
+        function simulateQRScan() {
+            if (window.history && window.history.pushState) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('start', 'quiz');
+                window.history.pushState({}, '', url.toString());
+            }
+            startQuiz();
+        }
+
+        // Generate QR code on load and auto-start quiz if opened via QR scan
+        window.addEventListener('DOMContentLoaded', () => {
+            const targetUrl = getDirectQuizUrl();
+            const qrImg = document.getElementById('qrImg');
+            if (qrImg) {
+                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(targetUrl)}`;
+            }
+
+            // If scanned via QR (has ?start=quiz or ?quiz=start or #quiz), directly trigger startQuiz()
+            const urlParams = new URLSearchParams(window.location.search);
+            const isFromQrOrDirect = urlParams.get('start') === 'quiz' ||
+                urlParams.get('quiz') === 'start' ||
+                urlParams.get('start') === 'true' ||
+                urlParams.get('quiz') === 'true' ||
+                urlParams.has('start') ||
+                urlParams.has('quiz') ||
+                window.location.hash.toLowerCase().includes('quiz');
+
+            if (isFromQrOrDirect) {
+                startQuiz();
+            }
+        });
+
+        function showScreen(id) {
+            ['startScreen', 'quizScreen', 'resultsScreen'].forEach(s => {
+                document.getElementById(s).style.display = 'none';
+            });
+            document.getElementById(id).style.display = 'flex';
+        }
+
+        function goToStart() {
+            // Remove search param from URL so page can return to front screen without loop
+            if (window.history && window.history.replaceState) {
+                const cleanUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+            showScreen('startScreen');
+        }
+
+        function startQuiz() {
+            currentIdx = 0;
+            userAnswers = new Array(quizData.length).fill(null);
+            showScreen('quizScreen');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = quizData[currentIdx];
+            const total = quizData.length;
+            const isLast = currentIdx === total - 1;
+
+            document.getElementById('appBarSub').textContent = `Frage ${currentIdx + 1} von ${total}`;
+            document.getElementById('headerBadge').textContent = `${currentIdx + 1} / ${total}`;
+            document.getElementById('qNumPill').textContent = `FRAGE ${String(currentIdx + 1).padStart(2, '0')} / ${total}`;
+            document.getElementById('qText').textContent = q.question;
+            document.getElementById('progressBar').style.width = `${((currentIdx + 1) / total) * 100}%`;
+
+            const list = document.getElementById('optionsList');
+            list.innerHTML = q.options.map(opt => {
+                const sel = userAnswers[currentIdx] === opt.letter;
+                return `<div id="opt_${opt.letter}" class="opt-card${sel ? ' selected' : ''}" onclick="selectOption('${opt.letter}')">
+        <div class="opt-letter">${opt.letter}</div>
+        <div class="opt-text">${opt.text}</div>
+      </div>`;
+            }).join('');
+
+            const btnNext = document.getElementById('btnNext');
+            const btnSubmit = document.getElementById('btnSubmitAll');
+            const btnPrev = document.getElementById('btnPrev');
+            document.getElementById('unansWarn').style.display = 'none';
+
+            if (isLast) {
+                btnNext.style.display = 'none';
+                btnSubmit.style.display = 'flex';
+            } else {
+                btnNext.style.display = 'flex';
+                btnSubmit.style.display = 'none';
+            }
+            btnPrev.disabled = currentIdx === 0;
+        }
+
+        function selectOption(letter) {
+            userAnswers[currentIdx] = letter;
+            document.querySelectorAll('.opt-card').forEach(el => el.classList.remove('selected'));
+            const el = document.getElementById(`opt_${letter}`);
+            if (el) el.classList.add('selected');
+        }
+
+        function goPrev() {
+            if (currentIdx > 0) { currentIdx--; renderQuestion(); }
+        }
+
+        function goNext() {
+            if (currentIdx < quizData.length - 1) { currentIdx++; renderQuestion(); }
+        }
+
+        function submitAll() {
+            const unanswered = userAnswers.filter(a => a === null).length;
+            if (unanswered > 0) {
+                const w = document.getElementById('unansWarn');
+                w.textContent = `⚠️ Noch ${unanswered} Frage(n) nicht beantwortet!`;
+                w.style.display = 'block';
+                return;
+            }
+            showResults();
+        }
+
+        function showResults() {
+            let correct = 0, wrong = 0;
+            quizData.forEach((q, i) => {
+                if (userAnswers[i] === q.correctLetter) correct++;
+                else wrong++;
+            });
+            const pct = Math.round((correct / quizData.length) * 100);
+
+            document.getElementById('pctDisplay').textContent = pct + '%';
+            document.getElementById('statCorrect').textContent = correct;
+            document.getElementById('statWrong').textContent = wrong;
+
+            let msg = pct >= 80 ? 'Hervorragende Leistung! Du bist bestens informiert.' : 'Gute Grundlage — schau dir die Antworten noch einmal an.';
+            document.getElementById('resultMsg').textContent = msg;
+
+            document.getElementById('reviewList').innerHTML = quizData.map((q, i) => {
+                const userAns = userAnswers[i];
+                const isCor = userAns === q.correctLetter;
+                const userText = q.options.find(o => o.letter === userAns)?.text || 'Keine Antwort';
+                const corText = q.options.find(o => o.letter === q.correctLetter)?.text;
+
+                return `<div class="review-item">
+        <div class="ri-header">
+          <span>${i + 1}. ${q.question}</span>
+          <span class="ri-badge ${isCor ? 'correct' : 'wrong'}">${isCor ? 'Richtig' : 'Falsch'}</span>
+        </div>
+        <div class="ri-ans">Deine Wahl: <strong>${userAns}) ${userText}</strong></div>
+        ${!isCor ? `<div class="ri-ans" style="color:#059669;">Richtig wäre: <strong>${q.correctLetter})${corText}</strong></div>` : ''}
+      </div>`;
+            }).join('');
+
+            showScreen('resultsScreen');
+            if (pct >= 70 && typeof confetti === 'function') {
+                confetti({ particleCount: 70, spread: 60, origin: { y: 0.4 } });
+            }
+        }
+    </script>
+</body>
+
+</html>
